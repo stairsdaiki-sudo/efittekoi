@@ -13,13 +13,13 @@ async function render() {
   );
 }
 
-test("server-renders the SUNUP morning training experience", async () => {
+test("server-renders the エフィってこ morning training experience", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /SUNUP!/);
+  assert.match(html, /エフィってこ！/);
   assert.match(html, /今日も、/);
   assert.match(html, /わたしなら/);
   assert.match(html, /朝の3分をはじめる/);

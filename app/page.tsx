@@ -245,7 +245,7 @@ export default function Home() {
 
     ctx.fillStyle = "#24154f";
     ctx.font = "900 46px Arial, 'Hiragino Sans', sans-serif";
-    ctx.fillText("SUNUP!", 76, 102);
+    ctx.fillText("エフィってこ！", 76, 102);
     ctx.font = "700 28px Arial, 'Hiragino Sans', sans-serif";
     ctx.fillText(`${dateLabel}  •  MY MORNING EFFICACY`, 76, 150);
 
@@ -287,7 +287,7 @@ export default function Home() {
 
     ctx.fillStyle = "#24154f";
     ctx.font = "800 26px Arial, 'Hiragino Sans', sans-serif";
-    ctx.fillText("#朝のエフィカシー  #SUNUP", 76, 1290);
+    ctx.fillText("#朝のエフィカシー  #エフィってこ", 76, 1290);
 
     return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   };
@@ -298,7 +298,7 @@ export default function Home() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `sunup-${new Date().toISOString().slice(0, 10)}.png`;
+    link.download = `efittekoi-${new Date().toISOString().slice(0, 10)}.png`;
     link.click();
     URL.revokeObjectURL(url);
     setShareStatus("シェア画像を保存したで！");
@@ -307,13 +307,13 @@ export default function Home() {
   const shareImage = async () => {
     const blob = await createShareImage();
     if (!blob) return;
-    const file = new File([blob], "sunup-morning.png", { type: "image/png" });
+    const file = new File([blob], "efittekoi-morning.png", { type: "image/png" });
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({
           files: [file],
           title: "今日の朝エフィカシー",
-          text: "今日も、わたしならできる。 #朝のエフィカシー #SUNUP",
+          text: "今日も、わたしならできる。 #朝のエフィカシー #エフィってこ",
         });
         setShareStatus("シェアの準備、ばっちり！");
       } catch {
@@ -335,7 +335,7 @@ export default function Home() {
       <header className="topbar">
         <button className="brand" type="button" onClick={() => setScreen("welcome")} aria-label="トップへ戻る">
           <span className="brand-sun" aria-hidden="true"><span /></span>
-          <span>SUNUP!</span>
+          <span>エフィってこ！</span>
         </button>
         <div className="today-chip">
           <span className="today-dot" aria-hidden="true" />
@@ -484,7 +484,7 @@ export default function Home() {
 
           <div className="share-card" id="share-card">
             <div className="share-card-top">
-              <div><span>SUNUP!</span><small>MY MORNING EFFICACY</small></div>
+              <div><span>エフィってこ！</span><small>MY MORNING EFFICACY</small></div>
               <b>{dateLabel}</b>
             </div>
             <h3>TODAY,<br />I BELIEVE <em>IN ME.</em></h3>
@@ -522,7 +522,7 @@ export default function Home() {
         </section>
       )}
 
-      <footer className="site-footer"><span>SUNUP! / SELF EFFICACY TRAINING</span><span>YOU&apos;VE GOT THIS.</span></footer>
+      <footer className="site-footer"><span>エフィってこ！ / SELF EFFICACY TRAINING</span><span>YOU&apos;VE GOT THIS.</span></footer>
     </main>
   );
 }

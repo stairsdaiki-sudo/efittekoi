@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
   const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
   const metadataBase = new URL(`${protocol}://${host}`);
-  const title = "SUNUP! | 朝のエフィカシートレーニング";
+  const title = "エフィってこ！ | 朝のエフィカシートレーニング";
   const description = "3つの問いで、自分への信頼をチャージ。最高の未来に向かう一歩を、毎朝3分でつくる。";
 
   return {
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      images: [{ url: "/og.png", width: 1731, height: 909, alt: "SUNUP! 今日も、わたしならできる。" }],
+      images: [{ url: "/og.png", width: 1731, height: 909, alt: "エフィってこ！ 今日も、わたしならできる。" }],
     },
     twitter: { card: "summary_large_image", title, description, images: ["/og.png"] },
   };
