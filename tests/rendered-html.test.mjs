@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -24,4 +25,13 @@ test("server-renders the エフィってこ morning training experience", async 
   assert.match(html, /わたしなら/);
   assert.match(html, /朝の3分をはじめる/);
   assert.doesNotMatch(html, /codex-preview|Building your site|react-loading-skeleton/i);
+});
+
+test("copies the result card as a PNG without downloading it", async () => {
+  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(source, /navigator\.clipboard\.write/);
+  assert.match(source, /new ClipboardItem\(\{ "image\/png": imagePromise \}\)/);
+  assert.match(source, /画像をコピー/);
+  assert.doesNotMatch(source, /link\.download|画像を保存/);
 });

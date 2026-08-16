@@ -292,16 +292,27 @@ export default function Home() {
     return new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   };
 
-  const downloadImage = async () => {
-    const blob = await createShareImage();
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `efittekoi-${new Date().toISOString().slice(0, 10)}.png`;
-    link.click();
-    URL.revokeObjectURL(url);
-    setShareStatus("シェア画像を保存したで！");
+  const copyImage = async () => {
+    setShareStatus("");
+
+    if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+      setShareStatus("このブラウザは画像コピーに未対応やねん。シェアボタンを使ってな。");
+      return;
+    }
+
+    const imagePromise = createShareImage().then((blob) => {
+      if (!blob) throw new Error("画像を作成できませんでした");
+      return blob;
+    });
+
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": imagePromise }),
+      ]);
+      setShareStatus("画像をコピーしたで！入力欄でそのまま貼り付けてな。");
+    } catch {
+      setShareStatus("コピーできへんかったわ。ブラウザのクリップボード許可を確認してな。");
+    }
   };
 
   const shareImage = async () => {
@@ -320,7 +331,7 @@ export default function Home() {
         setShareStatus("");
       }
     } else {
-      await downloadImage();
+      await copyImage();
     }
   };
 
@@ -510,9 +521,9 @@ export default function Home() {
           </div>
 
           <div className="share-actions">
-            <p>この気持ち、未来の自分にも残しとこ。</p>
+            <p>画像をコピーして、チャットや投稿にそのまま貼り付けよ。</p>
             <div>
-              <button className="secondary-button" type="button" onClick={downloadImage}><span>↓</span> 画像を保存</button>
+              <button className="secondary-button" type="button" onClick={copyImage}><span aria-hidden="true">⧉</span> 画像をコピー</button>
               <button className="primary-button share-button" type="button" onClick={shareImage}><span>シェアする</span><span className="button-arrow">↗</span></button>
             </div>
             <span className="share-status" role="status">{shareStatus}</span>
