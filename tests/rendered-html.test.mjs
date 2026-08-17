@@ -32,6 +32,7 @@ test("copies the result card as a PNG without downloading it", async () => {
 
   assert.match(source, /navigator\.clipboard\.write/);
   assert.match(source, /new ClipboardItem\(\{ "image\/png": imagePromise \}\)/);
+  assert.match(source, /await navigator\.share\(\{\s*files: \[file\],\s*\}\)/s);
   assert.match(source, /画像をコピー/);
-  assert.doesNotMatch(source, /link\.download|画像を保存/);
+  assert.doesNotMatch(source, /link\.download|画像を保存|text:\s*"今日も、わたしならできる。/);
 });

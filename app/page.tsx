@@ -323,8 +323,6 @@ export default function Home() {
       try {
         await navigator.share({
           files: [file],
-          title: "今日の朝エフィカシー",
-          text: "今日も、わたしならできる。 #朝のエフィカシー #エフィってこ",
         });
         setShareStatus("シェアの準備、ばっちり！");
       } catch {
