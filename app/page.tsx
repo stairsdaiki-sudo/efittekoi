@@ -300,6 +300,36 @@ function getWrappedTextLines(
   return lines.length ? lines : [""];
 }
 
+function loadCanvasImage(src: string) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = src;
+  });
+}
+
+function drawImageCover(
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+) {
+  const imageWidth = image.naturalWidth || image.width;
+  const imageHeight = image.naturalHeight || image.height;
+  const scale = Math.max(width / imageWidth, height / imageHeight);
+  const drawWidth = imageWidth * scale;
+  const drawHeight = imageHeight * scale;
+  ctx.drawImage(
+    image,
+    (width - drawWidth) / 2,
+    (height - drawHeight) / 2,
+    drawWidth,
+    drawHeight,
+  );
+}
+
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("welcome");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -324,19 +354,28 @@ export default function Home() {
     () => createDailyReport(answers, mbti, dateLabel, days),
     [answers, mbti, dateLabel, days],
   );
+  const photoClass = screen === "question" ? `photo-question-${questionIndex + 1}` : `photo-${screen}`;
 
   useEffect(() => {
     const savedMbti = window.localStorage.getItem("sunup-mbti");
     const savedDays = Number(window.localStorage.getItem("sunup-days"));
-    if (savedMbti) setMbti(savedMbti);
-    if (savedDays > 0) setDays(savedDays);
+    const frame = window.requestAnimationFrame(() => {
+      if (savedMbti) setMbti(savedMbti);
+      if (savedDays > 0) setDays(savedDays);
+    });
+    return () => window.cancelAnimationFrame(frame);
   }, []);
+
+  const resetScroll = () => {
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+  };
 
   const begin = () => {
     setAnswers(initialAnswers);
     setQuestionIndex(0);
     setShareStatus("");
     setScreen("question");
+    resetScroll();
   };
 
   const goNext = () => {
@@ -346,6 +385,7 @@ export default function Home() {
     } else {
       setScreen("mbti");
     }
+    resetScroll();
   };
 
   const complete = () => {
@@ -359,7 +399,7 @@ export default function Home() {
     window.localStorage.setItem("sunup-days", String(nextDays));
     setDays(nextDays);
     setScreen("result");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    resetScroll();
   };
 
   const createShareImage = async () => {
@@ -395,11 +435,19 @@ export default function Home() {
     const canvasHeight = Math.max(1350, innerBottom + 140);
     canvas.height = canvasHeight;
 
-    const gradient = ctx.createLinearGradient(0, 0, 1080, canvasHeight);
-    gradient.addColorStop(0, "#fff6a8");
-    gradient.addColorStop(0.48, "#ffcf51");
-    gradient.addColorStop(1, "#ff7b68");
-    ctx.fillStyle = gradient;
+    try {
+      const background = await loadCanvasImage("/backgrounds/result.webp");
+      drawImageCover(ctx, background, canvas.width, canvasHeight);
+    } catch {
+      ctx.fillStyle = "#ffcf51";
+      ctx.fillRect(0, 0, canvas.width, canvasHeight);
+    }
+
+    const photoVeil = ctx.createLinearGradient(0, 0, 1080, canvasHeight);
+    photoVeil.addColorStop(0, "rgba(255,246,168,.55)");
+    photoVeil.addColorStop(0.48, "rgba(255,207,81,.32)");
+    photoVeil.addColorStop(1, "rgba(255,123,104,.28)");
+    ctx.fillStyle = photoVeil;
     ctx.fillRect(0, 0, 1080, canvasHeight);
 
     ctx.fillStyle = "rgba(255,255,255,.42)";
@@ -417,7 +465,7 @@ export default function Home() {
     ctx.font = "700 28px Arial, 'Hiragino Sans', sans-serif";
     ctx.fillText(`${dateLabel}  •  MY MORNING EFFICACY`, 76, 150);
 
-    ctx.fillStyle = "#fffdf5";
+    ctx.fillStyle = "rgba(255,253,245,.48)";
     drawRoundRect(ctx, 60, 205, 960, innerBottom - 205, 52);
 
     ctx.fillStyle = "#ff4e8d";
@@ -500,6 +548,7 @@ export default function Home() {
 
   return (
     <main className={`app-shell screen-${screen}`}>
+      <div className={`screen-photo ${photoClass}`} aria-hidden="true" />
       <div className="sun-orbit orbit-one" aria-hidden="true" />
       <div className="sun-orbit orbit-two" aria-hidden="true" />
       <div className="spark spark-one" aria-hidden="true">✦</div>
@@ -507,7 +556,7 @@ export default function Home() {
       <div className="squiggle squiggle-one" aria-hidden="true">～～</div>
 
       <header className="topbar">
-        <button className="brand" type="button" onClick={() => setScreen("welcome")} aria-label="トップへ戻る">
+        <button className="brand" type="button" onClick={() => { setScreen("welcome"); resetScroll(); }} aria-label="トップへ戻る">
           <span className="brand-sun" aria-hidden="true"><span /></span>
           <span>エフィってこ！</span>
         </button>
@@ -580,7 +629,6 @@ export default function Home() {
               <label className="answer-label" htmlFor="morning-answer">あなたの言葉で</label>
               <textarea
                 id="morning-answer"
-                autoFocus
                 maxLength={180}
                 value={currentAnswer}
                 onChange={(event) => setAnswers((previous) => ({ ...previous, [currentQuestion.key]: event.target.value }))}
@@ -594,7 +642,14 @@ export default function Home() {
                 <button
                   className="back-button"
                   type="button"
-                  onClick={() => questionIndex === 0 ? setScreen("welcome") : setQuestionIndex((value) => value - 1)}
+                  onClick={() => {
+                    if (questionIndex === 0) {
+                      setScreen("welcome");
+                    } else {
+                      setQuestionIndex((value) => value - 1);
+                    }
+                    resetScroll();
+                  }}
                 >
                   ← もどる
                 </button>
@@ -633,7 +688,7 @@ export default function Home() {
             ))}
           </div>
           <div className="mbti-actions">
-            <button className="back-button" type="button" onClick={() => { setQuestionIndex(2); setScreen("question"); }}>← 質問にもどる</button>
+            <button className="back-button" type="button" onClick={() => { setQuestionIndex(2); setScreen("question"); resetScroll(); }}>← 質問にもどる</button>
             <button className="primary-button finish-button" type="button" disabled={!mbti} onClick={complete}>
               <span>今日のメッセージを見る</span><span className="button-arrow">✦</span>
             </button>
@@ -661,7 +716,7 @@ export default function Home() {
               <div><span>エフィってこ！</span><small>MY MORNING EFFICACY</small></div>
               <b>{dateLabel}</b>
             </div>
-            <h3>TODAY,<br />I BELIEVE <em>IN ME.</em></h3>
+            <h3>TODAY, I BELIEVE <em>IN ME.</em></h3>
             <div className="answer-summary summary-yellow"><span>自分の素晴らしいところは？</span><p>{answers.wonderful}</p></div>
             <div className="answer-summary summary-pink"><span>自分の最高の未来は？</span><p>{answers.future}</p></div>
             <div className="answer-summary summary-purple"><span>今日を最高の1日にするために何をする？</span><p>{answers.action}</p></div>
@@ -692,7 +747,7 @@ export default function Home() {
             <span className="share-status" role="status">{shareStatus}</span>
           </div>
 
-          <button className="restart-button" type="button" onClick={() => setScreen("welcome")}>明日もまた、自分を信じる →</button>
+          <button className="restart-button" type="button" onClick={() => { setScreen("welcome"); resetScroll(); }}>明日もまた、自分を信じる →</button>
         </section>
       )}
 

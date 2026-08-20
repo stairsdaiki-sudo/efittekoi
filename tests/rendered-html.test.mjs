@@ -52,3 +52,20 @@ test("builds a varied daily report from the answers and MBTI", async () => {
   assert.match(source, /advice\.powerLine/);
   assert.doesNotMatch(source, /思考を成果に変える日|勢いを味方にする日|最重要タスクに45分|5分だけ手を動かして/);
 });
+
+test("uses a dedicated optimized photo background for every screen", async () => {
+  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const names = ["welcome", "question-1", "question-2", "question-3", "mbti", "result"];
+
+  assert.match(source, /photo-question-\$\{questionIndex \+ 1\}/);
+  assert.match(source, /screen-photo/);
+  assert.match(source, /loadCanvasImage\("\/backgrounds\/result\.webp"\)/);
+  assert.match(css, /\.share-card[^}]*url\("\/backgrounds\/result\.webp"\)/);
+
+  for (const name of names) {
+    assert.match(css, new RegExp(`/backgrounds/${name}\\.webp`));
+    const asset = await readFile(new URL(`../public/backgrounds/${name}.webp`, import.meta.url));
+    assert.ok(asset.length > 1_000, `${name}.webp should contain an optimized photo`);
+  }
+});
