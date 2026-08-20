@@ -314,8 +314,8 @@ textarea:focus-visible {
 .share-card h3 { position: relative; z-index: 1; margin: 30px 0 25px; font-family: var(--font-display), var(--font-jp), sans-serif; font-size: clamp(47px, 8vw, 77px); line-height: .86; letter-spacing: -.075em; }
 .share-card h3 em { color: var(--purple); font-style: normal; }
 .answer-summary { position: relative; z-index: 1; margin-top: 10px; padding: 14px 17px; border: 2px solid var(--ink); border-radius: 16px; }
-.answer-summary span { color: var(--purple); font-family: var(--font-display), sans-serif; font-size: 8px; font-weight: 700; letter-spacing: .16em; }
-.answer-summary p { margin: 4px 0 0; font-size: 13px; font-weight: 800; line-height: 1.6; }
+.answer-summary span { color: var(--purple); font-family: var(--font-jp), sans-serif; font-size: 10px; font-weight: 900; letter-spacing: .04em; }
+.answer-summary p { margin: 4px 0 0; font-size: 13px; font-weight: 800; line-height: 1.6; white-space: pre-wrap; }
 .summary-yellow { background: #fff7bd; }
 .summary-pink { background: #ffd6e5; }
 .summary-purple { background: #e4dcff; }
@@ -330,7 +330,7 @@ textarea:focus-visible {
 .advice-title-row h3 { margin: 4px 0 0; font-size: clamp(24px, 4vw, 36px); font-weight: 900; letter-spacing: -.04em; }
 .type-stamp { display: flex; flex-direction: column; min-width: 92px; padding: 9px 13px; border: 2px solid var(--ink); border-radius: 12px; color: white; background: var(--purple); font-family: var(--font-display), sans-serif; font-size: 20px; font-weight: 700; text-align: center; transform: rotate(3deg); }
 .type-stamp small { margin-top: -2px; font-family: var(--font-jp), sans-serif; font-size: 8px; }
-.advice-intro { margin: 23px 0; font-size: 13px; font-weight: 700; line-height: 1.8; }
+.advice-intro { margin: 25px 0; font-size: 13px; font-weight: 700; line-height: 2; white-space: pre-line; }
 .action-focus { display: flex; flex-direction: column; gap: 5px; padding: 17px 19px; border-left: 7px solid var(--pink); border-radius: 0 14px 14px 0; background: #fff2ac; }
 .action-focus span { color: var(--pink); font-size: 9px; font-weight: 900; letter-spacing: .08em; }
 .action-focus b { font-size: 14px; line-height: 1.7; }
@@ -340,7 +340,7 @@ textarea:focus-visible {
 .morning-icon { background: var(--yellow); }
 .day-icon { color: white; background: var(--pink); }
 .night-icon { color: white; background: var(--purple); }
-.day-plan p { margin: 0; font-size: 10px; font-weight: 700; line-height: 1.7; }
+.day-plan p { margin: 0; font-size: 11px; font-weight: 700; line-height: 1.85; }
 .day-plan p b { display: block; margin-bottom: 3px; font-size: 12px; }
 .power-line { margin: 19px 0 0; padding-top: 18px; border-top: 1.5px solid var(--line); font-size: 10px; text-align: center; }
 .power-line b { color: var(--purple); }

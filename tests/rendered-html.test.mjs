@@ -34,5 +34,21 @@ test("copies the result card as a PNG without downloading it", async () => {
   assert.match(source, /new ClipboardItem\(\{ "image\/png": imagePromise \}\)/);
   assert.match(source, /await navigator\.share\(\{\s*files: \[file\],\s*\}\)/s);
   assert.match(source, /画像をコピー/);
+  assert.match(source, /自分の素晴らしいところは？/);
+  assert.match(source, /自分の最高の未来は？/);
+  assert.match(source, /今日を最高の1日にするために何をする？/);
+  assert.match(source, /replace\(\/\\r\\n\?\/g, "\\n"\)\.split\("\\n"\)/);
+  assert.doesNotMatch(source, /MY GREATNESS|MY BEST FUTURE|TODAY'S ONE STEP|maxLines/);
   assert.doesNotMatch(source, /link\.download|画像を保存|text:\s*"今日も、わたしならできる。/);
+});
+
+test("builds a varied daily report from the answers and MBTI", async () => {
+  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(source, /function detectTheme\(answers: Answers\)/);
+  assert.match(source, /function createDailyReport\(answers: Answers, mbti: string/);
+  assert.match(source, /hashText\(`\$\{answers\.wonderful\}\|\$\{answers\.future\}\|\$\{answers\.action\}\|\$\{type\}/);
+  assert.match(source, /\.join\("\\n\\n"\)/);
+  assert.match(source, /advice\.powerLine/);
+  assert.doesNotMatch(source, /思考を成果に変える日|勢いを味方にする日|最重要タスクに45分|5分だけ手を動かして/);
 });
